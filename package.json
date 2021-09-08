@@ -14,15 +14,14 @@
     "url": "git+https://github.com/raouldeheer/caerus.git"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Raoul de Heer",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/raouldeheer/caerus/issues"
   },
   "homepage": "https://github.com/raouldeheer/caerus#readme",
   "dependencies": {
     "express": "^4.17.1",
-    "express-query-parser": "^1.2.0",
     "node-fetch": "^3.0.0"
   },
   "devDependencies": {
