@@ -11,11 +11,15 @@ const port = Number(process.env.PORT) || 4862;
 express()
     .use(express.urlencoded({ extended: true }))
     .use(morgan("common"))
+    .get("/status", (_, res) => {
+        res.sendStatus(200);
+    })
     .get("/", async (req, res) => {
         if (!req.query.caerusUrl) {
             res.sendStatus(412);
             return;
         }
+        
         const target = String(req.query.caerusUrl);
         if (!RegExp(/[a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)$/ig)
             .test(target)) {
