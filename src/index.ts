@@ -1,21 +1,33 @@
 import express from "express";
 import fetch from "node-fetch";
+import ip from "ip";
+import morgan from "morgan";
+import dotenv from "dotenv";
+import { pipeline } from "stream/promises";
+dotenv.config();
 
-const app = express();
+const port = Number(process.env.PORT) || 4862;
 
-app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
+express()
+    .use(express.urlencoded({ extended: true }))
+    .use(morgan("common"))
+    .get("/", async (req, res) => {
+        if (!req.query.caerusUrl) {
+            res.sendStatus(412);
+            return;
+        }
+        const target = String(req.query.caerusUrl);
+        if (!RegExp(/[a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)$/ig)
+            .test(target)) {
+            res.sendStatus(412);
+            return;
+        }
 
-app.get("/", async function (req, res) {
-    const total = "https://" + req.query.caerusUrl;
-    console.log(total);
-    const data = await fetch(total);
-    const dataBody = await data.json();
-
-    res.status(data.status);
-    data.headers.forEach((v, k) => { res.setHeader(k, v); });
-    res.json(dataBody).end();
-});
-
-app.listen(8080, () => {
-    console.log("listing on 8080");
-});
+        const data = await fetch("https://" + target);
+        res.status(data.status);
+        if (data.body) await pipeline(data.body, res);
+        res.end();
+    })
+    .listen(port, ip.address(), () => {
+        console.log(`listing on http://${ip.address()}:${port}/`);
+    });
